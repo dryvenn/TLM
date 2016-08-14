@@ -139,7 +139,7 @@ We now see that the initiator is responsible for two things:
 - time management, so that the model stays accurate.
 
 
-#### DMI
+#### Direct Memory Interface
 
 Within the generic payload, there is one interesting field for optimization: the Direct Memory Interface. Indeed, it is not efficient at all to constantly fill up and pass on a transaction object just to access the same segment of memory. For this reason, TLM provides a mechanism to bypass the standard protocol and direcly access memory.
 
@@ -152,3 +152,22 @@ Giving away access to its memory is not irreversible for the target. The initiat
 We now see that the target is responsible for two things:
 - operation management, to fulfil the initiator's request;
 - DMI management, whether it has become available or not.
+
+
+### Coding styles
+
+Depending on the use case, it might be better sometimes to aim for a greater simulation speed (for instance when running software on top of TLM), and some other times to get a greater accuracy (for instance when doing hardware verification). TLM provides two coding styles to do just that: the Loosely-Timed (LT) and Approximately-Timed (AT) styles.
+
+
+#### Loosely-Timed
+
+In TLM the IP models run concurrently but on the same simulation machine, so they have to take turns in order to progress. Normally, when the simulation is Cycle-Accurate and Bit-Accurate (CABA), processes (SystemC's threads and methods) run for one cycle at each turn. And even though this yields a huge accuracy, the overhead of each context switch lead to a massive waste of time. The idea behind the LT style is to let each process run as far as it can (usually stopping when it needs to communicate), which minimizes the number of context switches. This is called **temporal decoupling**.
+
+However, there should still be a notion of turns so that one process does not monopolize processor time. For this reason, a process cannot run longer than a pre-defined **quantum** of time. This quantum thus defines the granularity of the simulation: a large quantum means a big speedup but also a loss in timing accuracy.
+
+
+#### Approximately-Timed
+
+Getting a better timing accuracy is made possible by the AT style. In this style, transactions get annotated with delays to schedule futur events. Processes, always in synchronisation with the simulation time, use `wait` and `notify` function calls to consume it. This way, control can be handed over quickly and at the right moment (when processes have to wait anyway).
+
+However, there can be no blocking transport anymore. In the LT style, the `b_transport` function was particularely appropriate because the initiator would hand control over to the target only for the time necessary to serve the request. But this could lead to timing inconsistencies because there is not any control over the elapsed time. So instead of using one blocking transport function, the AT style uses two non-blocking functions: `nb_transport_fw` which takes the forward path (from the initiator to the target), and `nb_transport_bw` which takes the backward path (from the target to the initiator). This way, requests and responses can be handled without compromising the model's accuracy.
