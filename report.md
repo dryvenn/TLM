@@ -54,7 +54,7 @@ Thirdly, TLM must be **accurate**. This is the only way to get meaningful result
 
 ### Overview
 
-TLM-2.0 was released in June 2008, and is compatible with SystemC 2.2.0 and higher. The core concept of its implementation is to replace any communication between IPs by a single function call. This call -replacing pins wiggling- will cary the transaction object and therefore all its characteristics. As for the IPs themselves, only a behavioral model in C++ is expected, which will be embedded into a communication wrapper to handle the transactions.
+TLM 2.0 was released in June 2008, and is compatible with SystemC 2.2.0 and higher. The core concept of its implementation is to replace any communication between IPs by a single function call. This call -replacing pins wiggling- will cary the transaction object and therefore all its characteristics. As for the IPs themselves, only a behavioral model in C++ is expected, which will be embedded into a communication wrapper to handle the transactions.
 
 
 ![TLM's implementation overview](https://github.com/dryvenn/TLM/blob/master/res/overview.png)
@@ -171,3 +171,11 @@ However, there should still be a notion of turns so that one process does not mo
 Getting a better timing accuracy is made possible by the AT style. In this style, transactions get annotated with delays to schedule futur events. Processes, always in synchronisation with the simulation time, use `wait` and `notify` function calls to consume it. This way, control can be handed over quickly and at the right moment (when processes have to wait anyway).
 
 However, there can be no blocking transport anymore. In the LT style, the `b_transport` function was particularely appropriate because the initiator would hand control over to the target only for the time necessary to serve the request. But this could lead to timing inconsistencies because there is not any control over the elapsed time. So instead of using one blocking transport function, the AT style uses two non-blocking functions: `nb_transport_fw` which takes the forward path (from the initiator to the target), and `nb_transport_bw` which takes the backward path (from the target to the initiator). This way, requests and responses can be handled without compromising the model's accuracy.
+
+
+### An example of protocol extension
+
+TLM has been applied to ARM's Advanced Microcontroller Bus Architecture (AMBA). But as its protocol is far too complicated for the generic classes of TLM 2.0, some modifications had to be made. For instance, the bus model needs to support information like "Secure/Non-secure/Privileged", and there is no mechanism for that in the base protocol. So, to preserve interoperability and respect TLM 2.0's design guidelines, they did the following:
+- Generic classes such as simple sockets were extended to support the features' management;
+- Extensions were added to the generic payload so that the additional information can be conveyed;
+- The classic blocking transport function was used, thus respecting the Loosely-Timed coding style.
