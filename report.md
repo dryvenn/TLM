@@ -86,7 +86,7 @@ SC_MODULE(Target) {
 
 	SC_CTOR(Target) : socket("socket") {
 		...
-	};
+	}
 
 	...
 
@@ -104,7 +104,7 @@ SC_MODULE(Initiator) {
 
 	SC_CTOR(Initiator) : socket("socket") {
 		...
-	};
+	}
 
 	...
 
