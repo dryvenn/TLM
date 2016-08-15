@@ -168,9 +168,9 @@ However, there should still be a notion of turns so that one process does not mo
 
 #### Approximately-Timed
 
-Getting a better timing accuracy is made possible by the AT style. In this style, transactions get annotated with delays to schedule futur events. Processes, always in synchronisation with the simulation time, use `wait` and `notify` function calls to consume it. This way, control can be handed over quickly and at the right moment (when processes have to wait anyway).
+Getting a better timing accuracy is made possible by the AT style. In this style, not only transactions include timing annotations but also indications on the current phase (begin/end of request, begin/end of response). Processes, in synchronisation with the simulation time, use `wait` and `notify` function calls to consume it.
 
-However, there can be no blocking transport anymore. In the LT style, the `b_transport` function was particularely appropriate because the initiator would hand control over to the target only for the time necessary to serve the request. But this could lead to timing inconsistencies because there is not any control over the elapsed time. So instead of using one blocking transport function, the AT style uses two non-blocking functions: `nb_transport_fw` which takes the forward path (from the initiator to the target), and `nb_transport_bw` which takes the backward path (from the target to the initiator). This way, requests and responses can be handled without compromising the model's accuracy.
+However, there can be no blocking transport anymore. In the LT style, the `b_transport` function was particularely appropriate because the initiator would hand control over to the target only for the time necessary to serve the request. But this could lead to timing inconsistencies because there is not any control over the elapsed time. So instead of using one blocking transport function, the AT style uses two non-blocking functions: `nb_transport_fw` which takes the forward path (from the initiator to the target), and `nb_transport_bw` which takes the backward path (from the target to the initiator). And it is to phases to keep up with the state of the transaction. This way, requests and responses can be handled without compromising the model's accuracy.
 
 
 ### An example of protocol extension
