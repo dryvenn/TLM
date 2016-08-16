@@ -1,7 +1,7 @@
 CC = g++
 
 SYSTEMC ?= /usr/local/systemc-2.3.1
-ARCH = macosx64
+ARCH ?= linux64
 
 CPPFLAGS = -isystem $(SYSTEMC)/include
 CXXFLAGS = -Wall -Wextra -Werror -g
