@@ -1,18 +1,17 @@
 #include "cpu.h"
 
-// TODO: dmi, operations
+#define TEST 0xdeadbeef
+
 void CPU::test_ram(void) {
-		cout << "Hello, test!" << endl;
-	unsigned int len = 4;
-	unsigned char* data = (unsigned char *) malloc(len);
+	unsigned int data = TEST;
 	tlm::tlm_generic_payload* tr = new tlm::tlm_generic_payload();
-	tr->set_command(tlm::TLM_READ_COMMAND);
+	tr->set_command(tlm::TLM_WRITE_COMMAND);
 	tr->set_address(0x00);
-	tr->set_data_ptr(data);
-	tr->set_data_length(len);
-	tr->set_streaming_width(len);
+	tr->set_data_ptr((unsigned char*) &data);
+	tr->set_data_length(sizeof(TEST));
+	tr->set_streaming_width(sizeof(TEST));
 	tr->set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
-	sc_time delay = sc_time(1, SC_PS);
+	sc_time delay = SC_ZERO_TIME;
 
 	CPU::socket->b_transport(*tr, delay);
 
@@ -21,11 +20,17 @@ void CPU::test_ram(void) {
 		return;
 	}
 
-	for(unsigned int i = 0; i < len; i++) {
-		if(data[i] != 0xff) {
-			cerr << "Error: response doesn't match" << endl;
-			return;
-		}
+	tr->set_command(tlm::TLM_READ_COMMAND);
+
+	unsigned int read_bytes = CPU::socket->transport_dbg(*tr);
+
+	if(read_bytes != sizeof(TEST)) {
+		cerr << "Error: transport_dbg failed, read " << read_bytes << " bytes" << endl;
+		return;
+	}
+	if(data != TEST) {
+		cerr << "Error: response doesn't match" << endl;
+		return;
 	}
 
 	cout << "Test RAM OK." << endl;

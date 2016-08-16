@@ -11,20 +11,21 @@
 #define SIZE 256
 
 
-// TODO: DMI, debug, random failures
 SC_MODULE(RAM) {
 
 	tlm_utils::simple_target_socket<RAM> socket;
 	unsigned char data[SIZE];
-	unsigned int len;
+	unsigned int size;
 
-	SC_CTOR(RAM): socket("socket"), len(SIZE)
+	SC_CTOR(RAM): socket("socket"), size(SIZE)
 	{
-		memset(data, 0xff, len);
+		memset(data, 0xff, size);
 		socket.register_b_transport(this, &RAM::b_transport);
+		socket.register_transport_dbg(this, &RAM::transport_dbg);
 	}
 
 	virtual void b_transport(tlm::tlm_generic_payload&, sc_time&);
+	virtual unsigned int transport_dbg(tlm::tlm_generic_payload&);
 };
 
 #endif
