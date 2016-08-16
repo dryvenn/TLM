@@ -177,9 +177,19 @@ Temporal decoupling in TLM relies on different time variables to achieve this "l
 
 #### Approximately-Timed
 
-Getting a better timing accuracy is made possible by the AT style. In this style, not only transactions include timing annotations but also indications on the current phase (begin/end of request, begin/end of response). Processes, in synchronisation with the simulation time, use `wait` and `notify` function calls to consume it.
+Even though blocking transports and return paths make up a simple and efficient implementation, it does not quite reflect the way hardware and protocol work in a real chip. The AT style allows for a better accuracy by breaking down the transactions into phases that may better represent the protocol's timings.
 
-However, there can be no blocking transport anymore. In the LT style, the `b_transport` function was particularely appropriate because the initiator would hand control over to the target only for the time necessary to serve the request. But this could lead to timing inconsistencies because there is not any control over the elapsed time. So instead of using one blocking transport function, the AT style uses two non-blocking functions: `nb_transport_fw` which takes the forward path (from the initiator to the target), and `nb_transport_bw` which takes the backward path (from the target to the initiator). And it is to phases to keep up with the state of the transaction. This way, requests and responses can be handled without compromising the model's accuracy.
+Transactions are thus split into requests and responses, themselves split into beginnings and ends. This results in four generic phases which can be extended to match more elaborate protocols.
+![TLM AT transactions](https://github.com/dryvenn/TLM/blob/master/res/AT.png)
+
+To do that, TLM provides non-blocking functions that work in both ways: `nb_transport_fw` which takes the forward path (from the initiator to the target), and `nb_transport_bw` which takes the backward path (from the target to the initiator). They also take the transaction object and the delay as arguments, added to the current phase. It is also possible for processes to skip phases by using an error code on the return path instead of answering with a function call. However, TLM has set a limitation regarding the phases known as the *exclusion rule*: there cannot be more than one request or more than one response in progress in a socket.
+
+
+##### Keeping track of time
+
+The AT style, to achieve its goal of being just accurate enough, needs to consume simulation time throughout the model's phases. TLM also provides utilities for this purpose, the payload event queues. For instance, an initiator can instantiate a `tlm_utils::peq_with_cb_and_phase` with a callback parameter and use its `notify` method when receiving a response, passing on the transaction, the phase, and the delay. Once the delay has passed, the callback is invoked with the transaction and the phase as arguments, allowing the thread to process them at the right time.
+
+For this system to work, threads have to play nice with each other by periodically calling the `wait` function, especially when it comes to honor the exclusion rule by waiting until the previous request or response has finished.
 
 
 ### An example of protocol extension
