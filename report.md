@@ -8,9 +8,9 @@
 
 The idea behind SystemC is to offer several levels of hardware abstraction in a unique and ubiquitous language: C++. Each of these levels constitutes a different **model** of the system, meaning that it is a way of representing it.
 
-The most well-known level of abstraction is the Register Transfer Level (RTL). Languages such as Verilog and VHDL abstract low-level things like wiring and gates to focus on the logic.
+The most well-known level of abstraction is the Register Transfer Level (RTL). Languages such as Verilog and VHDL abstract low-level things like wiring and gates to focus on the logic. Processes are sensitive to the pulses of common signals such as the main clock, which guarantees exact synchronisation.
 
-Another way of modeling the system is to consider the transactions between its components. At a higher level than the RTL, the Transaction Level (TL) abstracts both the elements of the system, which become mere behavioral models embedded into wrappers, and the communication between them.
+Another way of modeling the system is to consider the transactions between its components. At a higher level than the RTL, the Transaction Level (TL) abstracts both the elements of the system, which become mere behavioral models embedded into wrappers, and the communication between them. This means that processes no longer have a clock or other signals to synchronise to, they just exchange transactions and consume simulation time.
 
 
 ### Use cases
