@@ -161,9 +161,18 @@ Depending on the use case, it might be better sometimes to aim for a greater sim
 
 #### Loosely-Timed
 
-In TLM the IP models run concurrently but on the same simulation machine, so they have to take turns in order to progress. Normally, when the simulation is Cycle-Accurate and Bit-Accurate (CABA), processes (SystemC's threads and methods) run for one cycle at each turn. And even though this yields a huge accuracy, the overhead of each context switch lead to a massive waste of time. The idea behind the LT style is to let each process run as far as it can (usually stopping when it needs to communicate), which minimizes the number of context switches. This is called **temporal decoupling**.
+In TLM the IP models run concurrently but on the same simulation machine, so they have to take turns in order to progress. Normally, when the simulation is Cycle-Accurate and Bit-Accurate (CABA), processes (SystemC's threads and methods) run for one cycle at each turn. And even though this yields a huge accuracy, the overhead of each context switch lead to a massive waste of time. LT is about letting each process run as far as it can (usually stopping when it needs to communicate), which minimizes the number of context switches. This is called **temporal decoupling**.
 
 However, there should still be a notion of turns so that one process does not monopolize processor time. For this reason, a process cannot run longer than a pre-defined **quantum** of time. This quantum thus defines the granularity of the simulation: a large quantum means a big speedup but also a loss in timing accuracy.
+
+
+##### Keeping track of time
+
+Temporal decoupling in TLM relies on different time variables to achieve this "loose" synchronisation:
+- (System) Global Quantum: This is the quantum mentionned above, the running time each process gets before synchronisation. It should be set once at the beginning of the simulation within the singleton class `tlm::tlm_global_quantum`.
+- (Thread) Global Quantum: This is a per-thread record of the Global Quantum. TLM provides threads with a utility to hold quantum-related variables: `tlm_utils::tlm_quantumkeeper`. Best practices recommend to permanently set the Thread Global Quantum to the same value as the System Global Quantum in the thread's constructor.
+- Local Quantum: This is the remaining time in the current quantum, namely the difference between the current Thread Global Quantum's end and the current simulation time (obtained with `sc_time_stamp`). Because the System Quantum should the same as the Thread Quantum, it should always be the same value for all threads.
+- Local Time Offset: This is the difference between the thread's own time and the current simulation time. Indeed, even though threads cannot run longer than the quantum, they can run shorter. After an operation, a thread can advance the model time, which is the current simulation time plus the local time offset; and if it becomes greater than the quantum, then the thread needs synchronisation. The quantum keeper has a `need_sync` and a `sync` method for that.
 
 
 #### Approximately-Timed
