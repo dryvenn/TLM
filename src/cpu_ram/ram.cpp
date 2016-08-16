@@ -20,6 +20,8 @@ void RAM::b_transport(tlm::tlm_generic_payload& tr, sc_time& delay) {
 		tr.set_response_status(tlm::TLM_BURST_ERROR_RESPONSE);
 		return;
 	}
+	// DMI is supported
+	tr.set_dmi_allowed(true);
 	// Check the address and size.
 	if(addr + size > RAM::size) {
 		tr.set_response_status(tlm::TLM_ADDRESS_ERROR_RESPONSE);
@@ -57,4 +59,18 @@ unsigned int RAM::transport_dbg(tlm::tlm_generic_payload& tr) {
 			return 0;
 	}
 	return size;
+}
+
+bool RAM::get_direct_mem_ptr(tlm::tlm_generic_payload& tr, tlm::tlm_dmi& dmi)
+{
+	(void) tr;
+
+	dmi.allow_read_write();
+	dmi.set_dmi_ptr(RAM::data);
+	dmi.set_start_address(0);
+	dmi.set_end_address(RAM::size-1);
+	dmi.set_read_latency(SC_ZERO_TIME);
+	dmi.set_write_latency(SC_ZERO_TIME);
+
+	return true;
 }

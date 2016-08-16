@@ -35,3 +35,11 @@ void CPU::test_ram(void) {
 
 	cout << "Test RAM OK." << endl;
 };
+
+void CPU::invalidate_direct_mem_ptr(sc_dt::uint64 start, sc_dt::uint64 end)
+{
+	(void) start; (void) end;
+
+	if(CPU::dmi != NULL)
+		delete CPU::dmi;
+}

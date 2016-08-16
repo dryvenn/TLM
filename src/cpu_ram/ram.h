@@ -22,10 +22,12 @@ SC_MODULE(RAM) {
 		memset(data, 0xff, size);
 		socket.register_b_transport(this, &RAM::b_transport);
 		socket.register_transport_dbg(this, &RAM::transport_dbg);
+		socket.register_get_direct_mem_ptr(this, &RAM::get_direct_mem_ptr);
 	}
 
 	virtual void b_transport(tlm::tlm_generic_payload&, sc_time&);
 	virtual unsigned int transport_dbg(tlm::tlm_generic_payload&);
+	virtual bool get_direct_mem_ptr(tlm::tlm_generic_payload&, tlm::tlm_dmi&);
 };
 
 #endif
