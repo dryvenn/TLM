@@ -78,11 +78,19 @@ Generic classes for payloads and sockets are built-in.
 
 #### Targets
 
-The most basic target is a SystemC module that contains TLM's built-in target socket. The job of the target is to receive the request of the initiator, make up a response based on the IP's behavioral model, and send it back.
+A target's job is to receive a request from the initiator, make up a response based on the IP's behavioral model, and send it back. The most basic target is a SystemC module that contains TLM's target socket, namely `tlm::tlm_target_socket`. This class can be extended to obtain more elaborate targets and protocols while preserving interoperability. TLM also provides the convenience of a simple target socket to help developers.
 
 ```C++
 SC_MODULE(Target) {
-	tlm_utils::simple_target_socket<Target> socket;
+	/* Simple target socket
+	 *
+	 * Parameters:
+	 * 	- module name (mandatory);
+	 *	- bus width (optional, defaults to 32);
+	 *  - protocol types, which mainly concerns the type of payload (optional,
+	 *	  defaults to `tlm_base_protocol_types').
+	 */
+	tlm_utils::simple_target_socket<Target, 32, tlm::tlm_base_protocol_types> socket;
 
 	SC_CTOR(Target) : socket("socket") {
 		...
@@ -96,11 +104,11 @@ SC_MODULE(Target) {
 
 #### Initiators
 
-The most basic initiator is a SystemC module that contains TLM's built-in initiator socket. The job of the initiator is to send requests to the target based on the IP's behavioral model, and receive the responses.
+An initiator's job is to send requests to the target based on the IP's behavioral model, and receive the responses. Just like targets, the most basic initiator is a SystemC module that contains TLM's initiator socket, namely `tlm::tlm_initiator_socket`, which can also be extended and has been for its simple version.
 
 ```C++
 SC_MODULE(Initiator) {
-	tlm_utils::simple_initiator_socket<Initiator> socket;
+	tlm_utils::simple_initiator_socket<Initiator, 32, tlm::tlm_base_protocol_types> socket;
 
 	SC_CTOR(Initiator) : socket("socket") {
 		...
