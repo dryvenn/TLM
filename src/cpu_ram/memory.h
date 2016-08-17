@@ -13,8 +13,7 @@ SC_MODULE(Memory) {
 
 	tlm_utils::simple_target_socket<Memory> socket;
 
-	SC_CTOR(Memory): socket("socket")
-	{
+	SC_CTOR(Memory): socket("socket") {
 		socket.register_b_transport(this, &Memory::b_transport);
 		socket.register_transport_dbg(this, &Memory::transport_dbg);
 		socket.register_get_direct_mem_ptr(this, &Memory::get_direct_mem_ptr);

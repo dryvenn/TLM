@@ -13,8 +13,7 @@ class RAM: public Memory {
 		unsigned char data[LENGTH];
 
 	public:
-		RAM(): Memory("RAM"), length(LENGTH)
-		{
+		RAM(): Memory("RAM"), length(LENGTH) {
 			memset(data, 0, length);
 		}
 
