@@ -7,14 +7,10 @@ void RAM::b_transport(tlm::tlm_generic_payload& tr, sc_time& delay) {
 	unsigned int addr = tr.get_address();
 	unsigned char* data = tr.get_data_ptr();
 	unsigned int size = tr.get_data_length();
-	unsigned char* byte_en = tr.get_byte_enable_ptr();
+	unsigned char* be_ptr = tr.get_byte_enable_ptr();
+	unsigned int be_size = tr.get_byte_enable_length();
 	unsigned int stream_width = tr.get_streaming_width();
 
-	// Byte enables are not supported.
-	if(byte_en) {
-		tr.set_response_status(tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE);
-		return;
-	}
 	// Streaming is not supported.
 	if(!size || stream_width != size) {
 		tr.set_response_status(tlm::TLM_BURST_ERROR_RESPONSE);
@@ -28,17 +24,18 @@ void RAM::b_transport(tlm::tlm_generic_payload& tr, sc_time& delay) {
 		return;
 	}
 
-	switch(cmd) {
-		case tlm::TLM_READ_COMMAND:
-			memcpy(data, &RAM::data[addr], size);
-			break;
-		case tlm::TLM_WRITE_COMMAND:
-			memcpy(&RAM::data[addr], data, size);
-			break;
-		default:
-			tr.set_response_status(tlm::TLM_GENERIC_ERROR_RESPONSE);
-			return;
+	if(cmd == tlm::TLM_READ_COMMAND) {
+		for(unsigned int i = 0; i < size; i++)
+			if(be_ptr == NULL || be_ptr[i % be_size] == TLM_BYTE_ENABLED)
+				data[i] = RAM::data[addr + i];
 	}
+	else if(cmd == tlm::TLM_WRITE_COMMAND) {
+		for(unsigned int i = 0; i < size; i++)
+			if(be_ptr == NULL || be_ptr[i % be_size] == TLM_BYTE_ENABLED)
+				RAM::data[addr + i] = data[i];
+	}
+	// else cmd == tlm::TLM_IGNORE_COMMAND;
+
 	tr.set_response_status(tlm::TLM_OK_RESPONSE);
 }
 

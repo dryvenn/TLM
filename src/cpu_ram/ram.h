@@ -19,7 +19,7 @@ SC_MODULE(RAM) {
 
 	SC_CTOR(RAM): socket("socket"), size(SIZE)
 	{
-		memset(data, 0xff, size);
+		memset(data, 0, size);
 		socket.register_b_transport(this, &RAM::b_transport);
 		socket.register_transport_dbg(this, &RAM::transport_dbg);
 		socket.register_get_direct_mem_ptr(this, &RAM::get_direct_mem_ptr);
