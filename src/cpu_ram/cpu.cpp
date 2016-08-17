@@ -1,4 +1,15 @@
+#include <fstream>
+#include <string>
 #include "cpu.h"
+
+
+void CPU::invalidate_direct_mem_ptr(sc_dt::uint64 start, sc_dt::uint64 end)
+{
+	(void) start; (void) end;
+
+	if(CPU::dmi != NULL)
+		delete CPU::dmi;
+}
 
 
 void CPU::test_ram(void) {
@@ -37,12 +48,17 @@ void CPU::test_ram(void) {
 	}
 
 	cout << "Test RAM OK." << endl;
-};
+}
 
-void CPU::invalidate_direct_mem_ptr(sc_dt::uint64 start, sc_dt::uint64 end)
-{
-	(void) start; (void) end;
 
-	if(CPU::dmi != NULL)
-		delete CPU::dmi;
+void CPU::execute_instruction_file(void) {
+	std::ifstream infile(INSTRUCTION_FILE);
+	std::string line;
+	while (std::getline(infile, line)) {
+		cout << line << endl;
+
+		q_keeper.inc(sc_time(5, SC_NS));
+		if(q_keeper.need_sync())
+			q_keeper.sync();
+	}
 }
