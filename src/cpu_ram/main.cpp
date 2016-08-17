@@ -1,6 +1,6 @@
 #include <systemc.h>
 #include "ram.h"
-#include "cpu.h"
+#include "initiator.h"
 
 
 int sc_main (int argc, char * argv[])
@@ -11,9 +11,9 @@ int sc_main (int argc, char * argv[])
 	// Set the system global quantum
 	tlm::tlm_global_quantum::instance().set(sc_time(10, SC_NS));
 
-	CPU* cpu = new CPU("CPU");
-	RAM* ram = new RAM("RAM");
-	cpu->socket.bind(ram->socket);
+	Initiator* initiator = new Initiator("Initiator");
+	RAM* ram = new RAM();
+	initiator->socket.bind(ram->socket);
 	sc_start();
 
 	return 0;

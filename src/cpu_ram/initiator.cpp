@@ -1,18 +1,18 @@
 #include <fstream>
 #include <string>
-#include "cpu.h"
+#include "initiator.h"
 
 
-void CPU::invalidate_direct_mem_ptr(sc_dt::uint64 start, sc_dt::uint64 end)
+void Initiator::invalidate_direct_mem_ptr(sc_dt::uint64 start, sc_dt::uint64 end)
 {
 	(void) start; (void) end;
 
-	if(CPU::dmi != NULL)
-		delete CPU::dmi;
+	if(Initiator::dmi != NULL)
+		delete Initiator::dmi;
 }
 
 
-void CPU::test_ram(void) {
+void Initiator::test_ram(void) {
 	const unsigned int test = 0xdeadbeef;
 	unsigned int data = test;
 	const unsigned int byte_en = 0xffffff00;
@@ -27,7 +27,7 @@ void CPU::test_ram(void) {
 	tr->set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
 	sc_time delay = SC_ZERO_TIME;
 
-	CPU::socket->b_transport(*tr, delay);
+	Initiator::socket->b_transport(*tr, delay);
 
 	if(tr->is_response_error()) {
 		cerr << "Error: " + tr->get_response_string() << endl;
@@ -36,7 +36,7 @@ void CPU::test_ram(void) {
 
 	tr->set_command(tlm::TLM_READ_COMMAND);
 
-	unsigned int read_bytes = CPU::socket->transport_dbg(*tr);
+	unsigned int read_bytes = Initiator::socket->transport_dbg(*tr);
 
 	if(read_bytes != sizeof(test)) {
 		cerr << "Error: transport_dbg failed, read " << read_bytes << " bytes" << endl;
@@ -51,7 +51,7 @@ void CPU::test_ram(void) {
 }
 
 
-void CPU::execute_instruction_file(void) {
+void Initiator::execute_instruction_file(void) {
 	std::ifstream infile(INSTRUCTION_FILE);
 	std::string line;
 	while (std::getline(infile, line)) {
