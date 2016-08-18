@@ -36,6 +36,7 @@ SC_MODULE(Master) {
 	virtual int write(unsigned int addr, unsigned char* buff, unsigned int size);
 	virtual int read_byte(unsigned int addr, unsigned char& byte);
 	virtual int write_byte(unsigned int addr, unsigned char& byte);
+	virtual void sleep(sc_time duration);
 	// Tests the ram when executed with SC_THREAD.
 	virtual void test_ram(void);
 	// Threaded process to be implemented by the children.

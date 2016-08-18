@@ -65,9 +65,7 @@ int Master::read(unsigned int addr, unsigned char* buff, unsigned int size)
 
 	this->socket->b_transport(*tr, delay);
 
-	this->q_keeper.inc(delay);
-	if(this->q_keeper.need_sync())
-		this->q_keeper.sync();
+	this->sleep(delay);
 
 	return tr->is_response_error() ? -1 : 0;
 }
@@ -87,9 +85,7 @@ int Master::write(unsigned int addr, unsigned char* buff, unsigned int size)
 
 	this->socket->b_transport(*tr, delay);
 
-	this->q_keeper.inc(delay);
-	if(this->q_keeper.need_sync())
-		this->q_keeper.sync();
+	this->sleep(delay);
 
 	return tr->is_response_error() ? -1 : 0;
 }
@@ -104,4 +100,12 @@ int Master::read_byte(unsigned int addr, unsigned char& byte)
 int Master::write_byte(unsigned int addr, unsigned char& byte)
 {
 	return this->write(addr, &byte, 1);
+}
+
+
+void Master::sleep(sc_time duration)
+{
+	this->q_keeper.inc(duration);
+	if(this->q_keeper.need_sync())
+		this->q_keeper.sync();
 }
