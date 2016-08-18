@@ -81,13 +81,16 @@ void Memory::dump_on_stdout(void)
 	unsigned char* data = this->get_memory_ptr();
 	cout << hex;
 	for(;;) {
-		for(unsigned int i = 0; i < 10; i++)
-			if(j++ > this->get_length())
-				goto end;
-			else
+		for(unsigned int i = 0; i < 10; i++) {
+			if(j >= this->get_length()) {
+				cout << endl;
+				return;
+			}
+			else {
 				cout << "0x" << (unsigned int) data[j] << " ";
+				++j;
+			}
+		}
 		cout << endl;
 	}
-end:
-	cout << endl;
 }
