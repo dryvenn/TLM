@@ -8,8 +8,6 @@
 
 // Mandatory for simple sockets
 #define SC_INCLUDE_DYNAMIC_PROCESSES
-// The fake assembly file
-#define INSTRUCTION_FILE "./instructions.a"
 
 
 SC_MODULE(Master) {
