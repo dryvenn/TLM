@@ -3,12 +3,12 @@
 
 void CPU::process(void)
 {
-	this->execute_instruction_file();
+	this->execute_instr_file();
 }
 
 
-void CPU::execute_instruction_file(void) {
-	std::ifstream infile(this->instruction_file);
+void CPU::execute_instr_file(void) {
+	std::ifstream infile(this->instr_file);
 	std::string line;
 	while (std::getline(infile, line))
 		interpret_command(line);
@@ -44,7 +44,7 @@ void CPU::interpret_command(std::string command)
 	else if(command.at(0) == '#')
 		return;
 	else
-		cout << "CPU: " << command << endl;
+		cout << this->name() << ": " << command << endl;
 
 	std::string op;
 	std::string opds[10];
@@ -124,7 +124,7 @@ void CPU::interpret_command(std::string command)
 		throw "Unknown operator";
 	}
 
-	this->sleep(sc_time(5, SC_NS));
+	this->sleep(this->instr_latency);
 }
 
 
@@ -143,10 +143,10 @@ void CPU::chr(reg_num dst, word data)
 void CPU::dmp()
 {
 	for(unsigned int i = 0; i < REG_NUM; i++) {
-		cout << "r" << dec << i << ": ";
+		cout << " r" << dec << i << ": ";
 		cout << "0x" << hex << (unsigned int) R[i];
-		cout << endl;
 	}
+	cout << endl;
 }
 
 

@@ -12,11 +12,13 @@ int sc_main (int argc, char * argv[])
 	// Set the system global quantum
 	tlm::tlm_global_quantum::instance().set(sc_time(10, SC_NS));
 
-	CPU* cpu = new CPU("CPU", "./instructions.asm");
+	CPU* cpu0 = new CPU("CPU0", "./instructions0.asm", sc_time(2, SC_NS));
+	CPU* cpu1 = new CPU("CPU1", "./instructions1.asm", sc_time(3, SC_NS));
 	RAM* ram = new RAM("RAM");
 	Bus* bus = new Bus("Bus");
 	bus->initiator_socket.bind(ram->socket);
-	cpu->socket.bind(bus->targets_socket);
+	cpu0->socket.bind(bus->targets_socket);
+	cpu1->socket.bind(bus->targets_socket);
 	sc_start();
 	return 0;
 }

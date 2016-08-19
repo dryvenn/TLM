@@ -12,13 +12,14 @@ typedef unsigned char word;
 class CPU: public Master {
 	private:
 		word R[REG_NUM];
-		std::string instruction_file;
+		std::string instr_file;
+		sc_time instr_latency;
 	public:
-		CPU(sc_module_name name, std::string instr_file): Master(name), instruction_file(instr_file) {
+		CPU(sc_module_name name, std::string instr_file, sc_time instr_latency): Master(name), instr_file(instr_file), instr_latency(instr_latency) {
 		}
 
 		virtual void process(void);
-		virtual void execute_instruction_file(void);
+		virtual void execute_instr_file(void);
 		virtual void interpret_command(std::string command);
 		/* Processor operations */
 		void dmp(void);
