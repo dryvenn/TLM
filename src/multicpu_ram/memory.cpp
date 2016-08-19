@@ -1,8 +1,6 @@
 #include "memory.h"
 
 void Memory::b_transport(tlm::tlm_generic_payload& tr, sc_time& delay) {
-	(void) delay; // Timing does't matter for now;
-
 	tlm::tlm_command cmd = tr.get_command();
 	unsigned int addr = tr.get_address();
 	unsigned char* data = tr.get_data_ptr();
@@ -25,6 +23,8 @@ void Memory::b_transport(tlm::tlm_generic_payload& tr, sc_time& delay) {
 	}
 
 	if(cmd == tlm::TLM_READ_COMMAND) {
+		delay += this->read_latency;
+
 		if(be_ptr == NULL)
 			this->read(addr, data, size);
 		else
@@ -33,6 +33,8 @@ void Memory::b_transport(tlm::tlm_generic_payload& tr, sc_time& delay) {
 					this->read_byte(addr + i, data[i]);
 	}
 	else if(cmd == tlm::TLM_WRITE_COMMAND) {
+		delay += this->write_latency;
+
 		if(be_ptr == NULL)
 			this->write(addr, data, size);
 		else

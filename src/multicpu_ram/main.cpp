@@ -13,8 +13,8 @@ int sc_main (int argc, char * argv[])
 	tlm::tlm_global_quantum::instance().set(sc_time(10, SC_NS));
 
 	CPU* cpu0 = new CPU("CPU0", "./instructions0.asm", sc_time(2, SC_NS));
-	CPU* cpu1 = new CPU("CPU1", "./instructions1.asm", sc_time(3, SC_NS));
-	RAM* ram = new RAM("RAM");
+	CPU* cpu1 = new CPU("CPU1", "./instructions1.asm", sc_time(1, SC_NS));
+	RAM* ram = new RAM("RAM", sc_time(5, SC_NS));
 	Bus* bus = new Bus("Bus");
 	bus->initiator_socket.bind(ram->socket);
 	cpu0->socket.bind(bus->targets_socket);

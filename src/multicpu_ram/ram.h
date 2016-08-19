@@ -13,7 +13,7 @@ class RAM: public Memory {
 		unsigned char data[LENGTH];
 
 	public:
-		RAM(sc_module_name name): Memory(name), length(LENGTH) {
+		RAM(sc_module_name name, sc_time latency): Memory(name, latency, latency), length(LENGTH) {
 			memset(data, 0, length);
 		}
 

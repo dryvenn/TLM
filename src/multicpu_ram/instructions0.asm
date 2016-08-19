@@ -1,4 +1,3 @@
-nop
 # put a-vals
 chr r0 0xa0
 chr r1 0xa1

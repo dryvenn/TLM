@@ -12,8 +12,10 @@
 SC_MODULE(Memory) {
 
 	tlm_utils::simple_target_socket<Memory> socket;
+	sc_time read_latency;
+	sc_time write_latency;
 
-	SC_CTOR(Memory): socket("socket") {
+	Memory(sc_module_name name, sc_time read_latency, sc_time write_latency): sc_module(name), socket("socket"),read_latency(read_latency), write_latency(write_latency) {
 		socket.register_b_transport(this, &Memory::b_transport);
 		socket.register_transport_dbg(this, &Memory::transport_dbg);
 		socket.register_get_direct_mem_ptr(this, &Memory::get_direct_mem_ptr);
