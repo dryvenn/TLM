@@ -14,7 +14,7 @@ class CPU: public Master {
 		word R[REG_NUM];
 		std::string instruction_file;
 	public:
-		CPU(std::string instr_file): Master("CPU"), instruction_file(instr_file) {
+		CPU(sc_module_name name, std::string instr_file): Master(name), instruction_file(instr_file) {
 		}
 
 		virtual void process(void);

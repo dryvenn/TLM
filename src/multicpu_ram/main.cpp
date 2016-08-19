@@ -1,6 +1,7 @@
 #include <systemc.h>
 #include "ram.h"
 #include "cpu.h"
+#include "bus.h"
 
 
 int sc_main (int argc, char * argv[])
@@ -11,9 +12,11 @@ int sc_main (int argc, char * argv[])
 	// Set the system global quantum
 	tlm::tlm_global_quantum::instance().set(sc_time(10, SC_NS));
 
-	CPU* cpu = new CPU("./instructions.asm");
-	RAM* ram = new RAM();
-	cpu->socket.bind(ram->socket);
+	CPU* cpu = new CPU("CPU", "./instructions.asm");
+	RAM* ram = new RAM("RAM");
+	Bus* bus = new Bus("Bus");
+	bus->initiator_socket.bind(ram->socket);
+	cpu->socket.bind(bus->targets_socket);
 	sc_start();
 	return 0;
 }

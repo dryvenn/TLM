@@ -9,7 +9,7 @@ LDFLAGS = -L$(SYSTEMC)/lib-$(ARCH)
 LDLIBS = -lsystemc
 
 TARGET = main
-OBJ = main.o master.o memory.o cpu.o ram.o
+OBJ = main.o master.o memory.o cpu.o ram.o bus.o
 
 $(TARGET): $(OBJ)
 
