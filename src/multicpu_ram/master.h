@@ -15,6 +15,7 @@ SC_MODULE(Master) {
 	tlm_utils::simple_initiator_socket<Master> socket;
 	tlm::tlm_dmi* dmi;
 	tlm_utils::tlm_quantumkeeper q_keeper;
+	tlm::tlm_generic_payload* payload;
 
 	SC_CTOR(Master): socket("socket"), dmi(NULL) {
 		/* Set the thread's global quantum to the system global quantum.
@@ -24,9 +25,16 @@ SC_MODULE(Master) {
 		q_keeper.set_global_quantum(global_q);
 		q_keeper.reset();
 
+		payload = new tlm::tlm_generic_payload();
+
 		socket.register_invalidate_direct_mem_ptr(this, &Master::invalidate_direct_mem_ptr);
 
 		SC_THREAD(process);
+	}
+
+	~Master() {
+		this->invalidate_direct_mem_ptr(0, 0);
+		delete this->payload;
 	}
 
 	virtual void invalidate_direct_mem_ptr(sc_dt::uint64, sc_dt::uint64);
