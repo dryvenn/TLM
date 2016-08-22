@@ -4,9 +4,6 @@
 #include <systemc.h>
 #include <tlm.h>
 
-#define ARCH_BITS (sizeof(unsigned int) * 8)
-#define ARB_REGISTER_MASK (1 << (ARCH_BITS - 1))
-#define ARB_REGISTER_ONLY_VAL (((unsigned int) -1) >> 1)
 #define NO_MASTER ((unsigned int) -1 )
 #define MAX_MASTER_NB 32
 
@@ -33,7 +30,7 @@ class Arbitrator {
 		virtual void reset_enlisted(void);
 		virtual bool has_quantum_nb_changed(void);
 		virtual void elect(void);
-		virtual void enlist(int);
+		virtual void enlist(unsigned int);
 		virtual void process_transaction(int, tlm::tlm_generic_payload&);
 };
 

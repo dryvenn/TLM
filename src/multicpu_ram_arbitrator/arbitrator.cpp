@@ -34,34 +34,27 @@ void Arbitrator::elect()
 }
 
 
-void Arbitrator::enlist(int id)
+void Arbitrator::enlist(unsigned int id)
 {
-	assert(id >= 0);
 	assert(id < MAX_MASTER_NB);
 	this->enlisted[id] = true;
 }
 
-/* If we're in a new quantum, choose which master's gonna have the token this time.
- * Let masters enlist for having the token next time.
- * Make the accesses of the current token owner.
+
+/* 1- Elect the new token owner based on the previous quantum (no owner during the first one).
+ * 2- For those who don't have access and want it, enlist them for the next quantum.
+ * 3- For the one who has access, do the transporting but do not enlist him.
  */
 void Arbitrator::process_transaction(int id, tlm::tlm_generic_payload& tr)
 {
+	unsigned int uid = (unsigned int) id;
+
 	// New quantum implies elections
 	if(this->has_quantum_nb_changed())
 		this->elect();
 
-	// Upper bit at 1 means enlisting for next quantum
-	if(tr.get_address() & ARB_REGISTER_MASK)
-		this->enlist(id);
-	// Put the right address back
-	tr.set_address(tr.get_address() & (~ARB_REGISTER_MASK));
-
-	// All ones (except this upper bit) means enlisting only
-	if(tr.get_address() == ARB_REGISTER_ONLY_VAL)
-		tr.set_response_status(tlm::TLM_OK_RESPONSE);
-	// Otherwise if access is denied say it with the command error
-	else if((unsigned int) id != this->token_master)
+	if(uid != this->token_master) {
+		this->enlist(uid);
 		tr.set_response_status(tlm::TLM_COMMAND_ERROR_RESPONSE);
-	// else access is authorized and will happen
+	}
 }

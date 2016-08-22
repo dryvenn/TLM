@@ -1,7 +1,6 @@
 #include <fstream>
 #include <string>
 #include "master.h"
-#include "arbitrator.h"
 
 
 void Master::invalidate_direct_mem_ptr(sc_dt::uint64 start, sc_dt::uint64 end)
@@ -57,18 +56,17 @@ void Master::test_ram(void) {
 void Master::transport(tlm::tlm_generic_payload& tr, sc_time& delay)
 {
 	for(;;) {
-		// reset the response status to init value
-		tr.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
-		// request access
-		tr.set_address(tr.get_address() | ARB_REGISTER_MASK);
 		// do transporting
 		this->socket->b_transport(tr, delay);
 
+		// stop if arbitrator granted access
 		if(tr.get_response_status() != tlm::TLM_COMMAND_ERROR_RESPONSE)
 			break;
 
 		// wait for next turn
 		this->fast_forward();
+		// reset the status
+		tr.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
 	}
 }
 
