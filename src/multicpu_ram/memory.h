@@ -29,10 +29,11 @@ SC_MODULE(Memory) {
 	virtual void dump_on_stdout(void);
 	virtual unsigned int get_length(void) = 0;
 	virtual unsigned char* get_memory_ptr(void) = 0;
-	virtual int read(unsigned int addr, unsigned char* buff, unsigned int size) = 0;
-	virtual int write(unsigned int addr, unsigned char* buff, unsigned int size) = 0;
-	virtual int read_byte(unsigned int addr, unsigned char& byte) = 0;
-	virtual int write_byte(unsigned int addr, unsigned char& byte) = 0;
+	virtual bool is_dmi_supported(void) = 0;
+	virtual void read_byte(const unsigned int addr, unsigned char& byte);
+	virtual void write_byte(const unsigned int addr, unsigned char& byte);
+	virtual void read(const unsigned int addr, unsigned char* const buff, const unsigned int size) = 0;
+	virtual void write(const unsigned int addr, unsigned char* const buff, const unsigned int size) = 0;
 };
 
 #endif

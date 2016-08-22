@@ -15,7 +15,8 @@ void Memory::b_transport(tlm::tlm_generic_payload& tr, sc_time& delay) {
 		return;
 	}
 	// DMI is supported
-	tr.set_dmi_allowed(true);
+	if(this->is_dmi_supported())
+		tr.set_dmi_allowed(true);
 	// Check the address and size.
 	if(addr + size > this->get_length()) {
 		tr.set_response_status(tlm::TLM_ADDRESS_ERROR_RESPONSE);
@@ -67,6 +68,9 @@ bool Memory::get_direct_mem_ptr(tlm::tlm_generic_payload& tr, tlm::tlm_dmi& dmi)
 {
 	(void) tr;
 
+	if(!this->is_dmi_supported())
+		return false;
+
 	dmi.allow_read_write();
 	dmi.set_dmi_ptr(this->get_memory_ptr());
 	dmi.set_start_address(0);
@@ -95,4 +99,16 @@ void Memory::dump_on_stdout(void)
 		}
 		cout << endl;
 	}
+}
+
+
+void Memory::read_byte(const unsigned int addr, unsigned char& byte)
+{
+	read(addr, &byte, 1);
+}
+
+
+void Memory::write_byte(const unsigned int addr, unsigned char& byte)
+{
+	write(addr, &byte, 1);
 }

@@ -3,27 +3,23 @@
 
 #include <systemc.h>
 #include "memory.h"
-
-#define LENGTH 256
+#include "map.h"
 
 
 class RAM: public Memory {
 	private:
-		unsigned int length;
-		unsigned char data[LENGTH];
+		unsigned char data[RAM_SIZE];
 
 	public:
-		RAM(sc_module_name name, sc_time latency): Memory(name, latency, latency), length(LENGTH) {
-			memset(data, 0, length);
+		RAM(sc_module_name name, sc_time latency): Memory(name, latency, latency) {
+			memset(data, 0, this->get_length());
 		}
 
-		virtual unsigned int get_length(void);
-		virtual unsigned char* get_memory_ptr(void);
-		virtual int read(unsigned int addr, unsigned char* buff, unsigned int size);
-		virtual int write(unsigned int addr, unsigned char* buff, unsigned int size);
-		virtual int read_byte(unsigned int addr, unsigned char& byte);
-		virtual int write_byte(unsigned int addr, unsigned char& byte);
+		virtual unsigned int get_length(void) { return RAM_SIZE; }
+		virtual unsigned char* get_memory_ptr(void) { return (unsigned char*) this->data; }
+		virtual inline bool is_dmi_supported(void) { return true; }
+		virtual void read(const unsigned int addr, unsigned char* const buff, const unsigned int size);
+		virtual void write(const unsigned int addr, unsigned char* const buff, const unsigned int size);
 };
-
 
 #endif
