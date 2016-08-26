@@ -85,9 +85,9 @@ SC_MODULE(Target) {
 	/* Simple target socket
 	 *
 	 * Parameters:
-	 * 	- module name (mandatory);
+	 *	- module name (mandatory);
 	 *	- bus width (optional, defaults to 32);
-	 *  - protocol types, which mainly concerns the type of payload (optional,
+	 *	- protocol types, which mainly concerns the type of payload (optional,
 	 *	  defaults to `tlm_base_protocol_types').
 	 */
 	tlm_utils::simple_target_socket<Target, 32, tlm::tlm_base_protocol_types> socket;
