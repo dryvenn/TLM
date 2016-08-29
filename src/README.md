@@ -101,3 +101,18 @@ However, the two implementations differ when it comes to sockets:
 Firstly, cpu_ram uses the generic utilities of TLM (the simple sockets), whereas AMBA_PV has custom sockets (though based on the simple ones). This allow the protocol to be more complex, for example to support exclusive reads and writes.
 
 Secondly, in the cpu_ram design, the base classes contain the socket objects, whereas in the AMBA_PV design, sockets are possessed by the extending classes. In practice, this means that instead of bothering itself to make up a transaction object and call the `b_transport` method, the `CPU` class just invokes `read` or `write`, letting to its parent class to take care of the rest. However, the AMBA-PV implementation does not do that either; instead on calling the socket's `b_transport` method, the extending class calls its `read` and `write` methods, which are part of the custom protocol. Even though this solution lacks simplicity because several objects have to be built and passed on for each transaction, it gives more control to the caller which can fine-tune every aspect of the extended protocol.
+
+
+### AMBA-PV features
+
+AMBA-PV's extension of TLM brings more features to the models while respecting TLM 2.0's motto: interoperability.
+
+Indeed, the implementation of an AMBA bus follows TLM's best practices: declaring SystemC modules, adding sockets to them, and binding the sockets together before starting the simulation. As hinted by the standard, AMBA extensions and AMBA sockets won't work separately.
+
+This extension provides users with all the features of AMBA buses, especially different burst types, atomic accesses, and levels of privileges.
+Transporting is accessible through high-level read and write functions, although they need an additional control object (in order to manage the special features).
+
+There are three main categories of sockets that are available:
+- traditionnal sockets: the initiator version supports multiple targets;
+- snoop sockets: to allow cache consistency in complex architectures;
+- full duplex sockets: for back-and-forth communication.
